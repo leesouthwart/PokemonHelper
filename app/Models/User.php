@@ -41,4 +41,18 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * Oauth Token relationship
+     */
+    public function oauth()
+    {
+        return $this->hasOne(OauthToken::class);
+    }
+
+    public function ebayAuthCheck()
+    {
+        return false;
+    }
 }
