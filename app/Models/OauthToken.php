@@ -11,6 +11,7 @@ class OauthToken extends Model
 
     public $fillable = [
         'token',
+        'refresh_token',
         'user_id'
     ];
 

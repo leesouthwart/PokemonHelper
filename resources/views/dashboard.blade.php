@@ -11,9 +11,9 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
 
                     @if(!auth()->user()->ebayAuthCheck())
-                    <a target="_blank" href="{{config('ebay.prod_login')}}}}">Login to ebay</a>
+                    <a target="_blank" href="{{ config('ebay.signin_url') }}">Login to ebay</a>
                     @endif
-                    <p>{{auth()->user()->oauth->token}}}</p>
+                    <p>Signed in as <b>{{auth()->user()->getName()}}</b></p>
                 </div>
             </div>
         </div>

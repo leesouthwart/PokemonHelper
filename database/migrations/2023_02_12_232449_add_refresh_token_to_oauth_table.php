@@ -13,11 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('oauth_tokens', function (Blueprint $table) {
-            $table->id();
-            $table->text('token');
-            $table->unsignedBigInteger('user_id')->index();
-            $table->timestamps();
+        Schema::table('oauth_tokens', function (Blueprint $table) {
+            $table->text('refresh_token')->after('token');
         });
     }
 
@@ -28,6 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('oauth_tokens');
+        Schema::table('oauth_tokens', function (Blueprint $table) {
+            $table->dropColumn('refresh_token');
+        });
     }
 };

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Ebay;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 use App\Models\OauthToken;
 
@@ -16,12 +17,36 @@ class OAuthController extends Controller
      */
     public function create(Request $request)
     {
-        $token = $request->get('code');
 
-        $oauth = OauthToken::create([
-            'token' => $token,
-            'user_id' => Auth::id()
-        ]);
+        // @todo - Tidy this up and make it look not retarded, thanks random polish guy though
+        // @todo - Error handling nicer?
+
+        $ch = curl_init(config('ebay.access_token_grant_url'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/x-www-form-urlencoded',
+            'Authorization: Basic '.base64_encode( config('ebay.app_id') . ':' . config('ebay.cert_id'))
+        ));
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, "grant_type=authorization_code&code=". $request->get('code') ."&redirect_uri=".config('ebay.ruName'));
+
+        $response = curl_exec($ch);
+
+        $json = json_decode($response, true);
+
+        $info = curl_getinfo($ch);
+        curl_close($ch);
+        
+        if($json != null)
+        {
+            $oauth = OauthToken::create([
+                'token' => $json["access_token"],
+                'refresh_token' => $json["refresh_token"],
+                'user_id' => Auth::id(),
+            ]);
+        }
 
         $message = $oauth ? 'Sucessfully linked Ebay account' : 'An error occurred, please try again later.';
 

@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+use Illuminate\Support\Facades\Http;
+
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -53,6 +55,30 @@ class User extends Authenticatable
 
     public function ebayAuthCheck()
     {
+        if(!$this->oauth && !$this->oauth->token) {
+            return false;
+        }
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $this->oauth->token
+        ])->get('https://apiz.ebay.com/commerce/identity/v1/user/');
+
+        if($response->json('username')) {
+            return true;
+        }
+
         return false;
+    }
+
+    public function getName()
+    {
+        //dd($this->token);
+        if($this->oauth && $this->oauth->token) {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $this->oauth->token
+            ])->get('https://apiz.ebay.com/commerce/identity/v1/user/');
+
+            return $response->json('username');
+        }
     }
 }
