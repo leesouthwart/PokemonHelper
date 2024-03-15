@@ -50,18 +50,23 @@ class User extends Authenticatable
      */
     public function oauth()
     {
-        return $this->hasOne(OauthToken::class);
+        return $this->hasOne(OauthToken::class)->latest();
+    }
+
+    public function ebay()
+    {
+        return $this->hasOne(EbayProfile::class);
     }
 
     public function ebayAuthCheck()
     {
-        if(!$this->oauth && !$this->oauth->token) {
+        if(is_null($this->oauth)) {
             return false;
         }
 
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $this->oauth->token
-        ])->get('https://apiz.ebay.com/commerce/identity/v1/user/');
+        ])->get(config('ebay.endpoints.' . env('APP_ENV') . '.identity'));
 
         if($response->json('username')) {
             return true;
@@ -72,12 +77,13 @@ class User extends Authenticatable
 
     public function getName()
     {
-        //dd($this->token);
+
+        // @todo Add some sort of way of checking if we are in local everywhere cuz this is a madness
         if($this->oauth && $this->oauth->token) {
+
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $this->oauth->token
-            ])->get('https://apiz.ebay.com/commerce/identity/v1/user/');
-
+            ])->get(config('ebay.endpoints.' . env('APP_ENV') . '.identity'));
             return $response->json('username');
         }
     }

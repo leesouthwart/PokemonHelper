@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Session;
+use App\Models\Currency;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +26,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        View::composer('*', function ($view) {
+            $currency = Currency::where('code', session('currency'))->first(); // Default value is 'USD' if 'currency' is not set in the session.
+            $view->with('currency', $currency);
+        });
     }
 }

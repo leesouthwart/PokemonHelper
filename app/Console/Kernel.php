@@ -15,7 +15,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->command('convert:currency')->dailyAt('00:00');
+        $schedule->command('get:access_token')->dailyAt('00:05')->withoutOverlapping();
     }
 
     /**

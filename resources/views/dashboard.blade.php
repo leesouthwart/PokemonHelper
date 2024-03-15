@@ -6,14 +6,35 @@
     </x-slot>
 
     <div class="py-12">
+        @if(Session::has('message'))
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
 
+                    {{Session::get('message')}}
+
+                </div>
+            </div>
+        </div>
+        @endif
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
                     @if(!auth()->user()->ebayAuthCheck())
-                    <a target="_blank" href="{{ config('ebay.signin_url') }}">Login to ebay</a>
-                    @endif
+
+                    <a target="_blank" href="{{ config('ebay.login') }}">Login to ebay</a>
+                    @else
                     <p>Signed in as <b>{{auth()->user()->getName()}}</b></p>
+                    @endif
+
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mt-8 mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    <a></a>
                 </div>
             </div>
         </div>

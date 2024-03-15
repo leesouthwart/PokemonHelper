@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Ebay;
 
 use App\Http\Controllers\Controller;
+use App\Models\EbayProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
@@ -38,19 +39,27 @@ class OAuthController extends Controller
 
         $info = curl_getinfo($ch);
         curl_close($ch);
-        
-        if($json != null)
+
+        if($json)
         {
-            $oauth = OauthToken::create([
-                'token' => $json["access_token"],
-                'refresh_token' => $json["refresh_token"],
-                'user_id' => Auth::id(),
-            ]);
+            if(array_key_exists('access_token', $json)) {
+                $oauth = OauthToken::create([
+                    'token' => $json["access_token"],
+                    'refresh_token' => $json["refresh_token"],
+                    'user_id' => Auth::id(),
+                ]);
+
+                $ebayProfile = EbayProfile::where('user_id', auth()->user()->id)->first();
+
+                if(!$ebayProfile) {
+                    $ebayProfile = EbayProfile::create([
+                        'user_id' => auth()->user()->id
+                    ]);
+                }
+            }
         }
 
-        $message = $oauth ? 'Sucessfully linked Ebay account' : 'An error occurred, please try again later.';
-
-        return redirect('dashboard')->with(['message', $message]);
+        return redirect('dashboard');
     }
 
 }

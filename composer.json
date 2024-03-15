@@ -10,6 +10,7 @@
         "laravel/framework": "^9.19",
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
+        "livewire/livewire": "*",
         "roach-php/laravel": "^2.0",
         "spatie/browsershot": "^3.57"
     },
