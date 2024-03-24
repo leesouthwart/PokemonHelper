@@ -25,25 +25,46 @@ class Card extends Model
 
     public function getCardDataFromCr($url)
     {
-        $httpClient = new Client();
+//        $client = new \GuzzleHttp\Client();
+//
+//        $response = $client->request('GET', config('settings.scrape_url_base') . $url, [
+//            'headers' => [
+//                'accept' => 'application/json',
+//            ],
+//        ]);
+//
+//
+//        $json = json_decode($response->getBody()->getContents(), true);
+//        $jsonData = $json['result']['selectorElements'];
+//
+//        dd($jsonData);
 
-        $response = $httpClient->get($url);
+        $jsonData = [
+            [
+                "selector" => "#main_img_1",
+                "textNodes" => [""],
+                "htmlElements" => [
+                    '<img src="https://www.cardrush-pokemon.jp/data/cardrushpokemon/_/70726f647563742f43525f533132615f37392e6a7067003430300000660023666666666666.jpg" data-x2="https://www.cardrush-pokemon.jp/data/cardrushpokemon/_/70726f647563742f43525f533132615f37392e6a7067003634350000740023666666666666.jpg" width="400" height="400" id="main_img_1" alt="画像1: ミュウ【AR】{183/172}" data-id="64908">'
+                ]
+            ],
+            [
+                "selector" => "#pricech",
+                "textNodes" => [
+                    "780円"
+                ],
+                "htmlElements" => [
+                    "<span class=\"figure\" id=\"pricech\">680円</span>"
+                ]
+            ]
+        ];
 
-        $htmlString = (string) $response->getBody();
-
-        // HTML is often wonky, this suppresses a lot of warnings
-        libxml_use_internal_errors(true);
-
-        $doc = new DOMDocument();
-        $doc->loadHTML($htmlString);
-
-        $xpath = new DOMXPath($doc);
-
-        $price = $xpath->evaluate('//span[@id="pricech"][1]');
+        $dom = new DOMDocument();
+        $dom->loadHTML($jsonData[0]['htmlElements'][0]);
+        $xpath = new DOMXPath($dom);
 
         $data = [
-            'cr_price' => str_replace('円', '', $price->item(0)->nodeValue),
-            'image_url' => $xpath->evaluate('//img[@id="main_img_1"]/@src')->item(0)->nodeValue
+            'cr_price' => str_replace('円', '', $jsonData[1]['textNodes'][0]),
+            'image_url' => $xpath->evaluate("string(//img/@src)")
         ];
 
         return $data;

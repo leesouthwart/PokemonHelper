@@ -14,7 +14,6 @@ class Card extends Component
         $this->card = $card;
         $this->searchTerm = $this->card->search_term;
     }
-A
     public function render()
     {
         return view('livewire.card');

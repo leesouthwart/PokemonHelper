@@ -50,6 +50,20 @@ Route::middleware('auth')->group(function () {
 //    return $response->json();
 //});
 
+Route::get('test2', function() {
+    $client = new \GuzzleHttp\Client();
+
+    $response = $client->request('GET', config('settings.scrape_url_base') . 'https://www.cardrush-pokemon.jp/product/2628', [
+        'headers' => [
+            'accept' => 'application/json',
+        ],
+    ]);
+
+
+    $json = json_decode($response->getBody()->getContents(), true);
+    dd($json['result']['selectorElements']);
+});
+
 
 Route::middleware('currency.convert')->group(function () {
     Route::get('cardrush', [CardController::class, 'index'])->name('cardrush');

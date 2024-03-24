@@ -9,9 +9,9 @@
 
     <div class="card_profit w-1/3 mr-3">
         <div class="w-full bg-gray-600 flex p-2 grid grid-cols-3">
+            <p class="text-gray-300 text-left">{{$currency->symbol}}{{$card->converted_price}}</p>
             <p class="text-gray-300 text-center">{{$currency->symbol}}{{$card->converted_price}}</p>
-            <p class="text-gray-300 text-center">{{$currency->symbol}}{{$card->converted_price}}</p>
-            <p class="text-gray-300 text-center">{{$currency->symbol}}{{$card->converted_price}}</p>
+            <p class="text-gray-300 text-right">{{$currency->symbol}}{{$card->converted_price}}</p>
         </div>
     </div>
 </div>
