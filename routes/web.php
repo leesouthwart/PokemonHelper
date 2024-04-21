@@ -64,6 +64,10 @@ Route::get('test2', function() {
     dd($json['result']['selectorElements']);
 });
 
+Route::get('test3', function() {
+   $ebay = new \App\Services\EbayService();
+   $items = $ebay->getEbayData('mew 183 172');
+});
 
 Route::middleware('currency.convert')->group(function () {
     Route::get('cardrush', [CardController::class, 'index'])->name('cardrush');

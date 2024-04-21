@@ -4,12 +4,19 @@ namespace App\Http\Livewire;
 
 use App\Models\Card;
 use Livewire\Component;
+use App\Services\EbayService;
 
 class CardForm extends Component
 {
     public String $url;
     public String $searchTerm;
     public Bool $loading = false;
+    protected $ebayService;
+
+    public function __construct()
+    {
+        $this->ebayService = new EbayService();
+    }
 
     public function render()
     {
@@ -18,7 +25,7 @@ class CardForm extends Component
 
     public function addCard()
     {
-        $loading = true;
+        $this->loading = true;
 
         try {
             $card = new Card;
@@ -30,10 +37,20 @@ class CardForm extends Component
             $card->cr_price = $data['cr_price'];
             $card->image_url = $data['image_url'];
             $card->save();
+
+            $this->ebayService->getEbayData($this->searchTerm);
+
         } catch (\Exception $e) {
             dd('Error: ' . $e->getMessage());
         }
 
-        $loading = false;
+        $this->resetVars();
+    }
+
+    public function resetVars()
+    {
+        $this->url = '';
+        $this->searchTerm = '';
+        $this->loading = false;
     }
 }

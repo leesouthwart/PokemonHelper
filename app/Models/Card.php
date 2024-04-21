@@ -25,6 +25,7 @@ class Card extends Model
 
     public function getCardDataFromCr($url)
     {
+        // FOR LIVE
 //        $client = new \GuzzleHttp\Client();
 //
 //        $response = $client->request('GET', config('settings.scrape_url_base') . $url, [
@@ -39,6 +40,7 @@ class Card extends Model
 //
 //        dd($jsonData);
 
+        // FOR TESTING
         $jsonData = [
             [
                 "selector" => "#main_img_1",

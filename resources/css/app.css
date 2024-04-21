@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.listing-image-container {
+    width: 150px;
+    height: 150px;
+    background-color: #6b7280;
+}

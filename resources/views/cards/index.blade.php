@@ -1,8 +1,13 @@
 <x-app-layout class="flex">
     <div class="flex">
         <div class="bg-gray-700 w-4/5">
-            <livewire:card-form />
-            <livewire:card-list />
+            <div>
+                <livewire:card-form />
+            </div>
+
+            <div>
+                <livewire:card-list />
+            </div>
         </div>
 
 

@@ -1,4 +1,4 @@
-<div class="w-full bg-gray-500 flex items-center px-3 py-2 my-3">
+<div wire:click="selectCard" class="w-full bg-gray-500 flex items-center px-3 py-2 my-3 cursor-pointer">
     <div class="card_image">
         <img height="80px" width="80px" src="{{$card->image_url}}" alt="Pokemon Card">
     </div>
