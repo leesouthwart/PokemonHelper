@@ -76,7 +76,7 @@ class Card extends Model
     {
         $currency = Currency::where('code', session('currency'))->first();
         $intVal = intval(str_replace(',', '', $this->cr_price));
-        $price = $intVal * $currency->conversionsTo->where('id', Currency::JPY)->first()->pivot->conversion_rate;
+        $price = $intVal * $currency->convertFrom->where('id', Currency::JPY)->first()->pivot->conversion_rate;
 
         return number_format($price, 2, '.', '');
     }

@@ -22,17 +22,20 @@ class Currency extends Model
 
     /**
      * Get Currency Conversions for Currency
-     * Usage: $currency->conversionsFrom->filterTarget(Currency::USD)->conversion_rate
-     * $currency will usually come from auth()->user()->currency
+     * Usage: $price * $currency->convertTo->where('id', \App\Models\Currency::USD)->first()->pivot->conversion_rate}}
      */
 
-    public function conversionsFrom()
+    public function convertTo()
     {
         return $this->belongsToMany(Currency::class, 'currency_conversions', 'currency_id_1', 'currency_id_2')
             ->withPivot('conversion_rate');
     }
 
-    public function conversionsTo()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * Usage: $currency->conversionsTo->where('id', \App\Models\Currency::JPY)->first()->pivot->conversion_rate
+     */
+    public function convertFrom()
     {
         return $this->belongsToMany(Currency::class, 'currency_conversions', 'currency_id_2', 'currency_id_1')
             ->withPivot('conversion_rate');

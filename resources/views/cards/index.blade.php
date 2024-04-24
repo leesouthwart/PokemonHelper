@@ -11,7 +11,7 @@
         </div>
 
 
-        <div class="w-1/5 bg-yellow-200">
+        <div class="w-1/5 bg-gray-800">
             <livewire:sidebar />
         </div>
     </div>
