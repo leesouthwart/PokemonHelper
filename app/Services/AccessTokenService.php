@@ -38,7 +38,7 @@ class AccessTokenService
         $info = curl_getinfo($ch);
         curl_close($ch);
 
-        if($json) {
+        if($json && isset($json['access_token'])) {
             return $json['access_token'];
         } else {
             throw new \Exception('Failed to fetch access token from eBay: ' . $response);

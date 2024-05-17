@@ -8,7 +8,6 @@ return [
 
     'access_token_grant_url' =>  env('APP_ENV') == 'local' ? 'https://api.sandbox.ebay.com/identity/v1/oauth2/token' : 'https://api.ebay.com/identity/v1/oauth2/token',
     'ruName' => env('APP_ENV') == 'local' ? 'le_southwart-lesouthw-SlabLi-nsergyhf' : 'le_southwart-lesouthw-SlabLi-nxeph',
-    'login'=> env('APP_ENV') == 'local' ? env('local_login', null) : env('prod_login', null),
     'endpoints' => [
         'local' => [
             'identity' => 'https://apiz.sandbox.ebay.com/commerce/identity/v1/user/',

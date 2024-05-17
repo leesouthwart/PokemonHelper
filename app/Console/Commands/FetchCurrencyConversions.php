@@ -40,13 +40,13 @@ class FetchCurrencyConversions extends Command
             $otherCurrencies = Currency::where('id', '!=', $currency->id)->get();
 
             foreach($otherCurrencies as $target) {
-                $conversion = $currency->conversionsFrom()->where('currency_id_2', $target->id)->first();
+                $conversion = $currency->convertTo()->where('currency_id_2', $target->id)->first();
 
                 if($conversion) {
                     $conversion->pivot->conversion_rate = $json['conversion_rates'][strtoupper($target->code)];
                     $conversion->pivot->save();
                 } else {
-                    $currency->conversionsFrom()->attach($target->id, ['conversion_rate' => $json['conversion_rates'][strtoupper($target->code)]]);
+                    $currency->convertTo()->attach($target->id, ['conversion_rate' => $json['conversion_rates'][strtoupper($target->code)]]);
                 }
             }
         }
