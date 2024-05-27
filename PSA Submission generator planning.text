@@ -1,0 +1,50 @@
+PSA Submission Sheet Generator
+
+The aim is to be able to enter two PSA cert numbers, and the app will loop all of the cert numbers and generate a sheet used for uploading as drafts
+
+This doc will explain the main things which go into the sheet, and then explain how we will handle them.
+
+The 'Flow'
+- Enter two PSA Cert Numbers
+- Use ScrapingRobot to pull information from the PSA website (www.psacard.com/cert/XXX)
+- Save the relevant information for a listing in a new model 'EbayListing'
+- This EbayListing should have a relavant 'batch_id' for grouping listings which have been generated at the same time.
+- The 'listings' will be shown in row format on the frontend to check for any obvious errors.
+- Use Maats Export Package to export all EbayListing's with the correct batch_id to a spreadsheet using the layout required for ebay draft sheet uploads.
+
+Layout and Misc:
+- General layout will be handled with maats Export package.
+- The Description will be a html block with automatically generated image strings which come from the scrape.
+- Columns needed can be found in Pokemon Listing Sheet in google docs. Most are static, but the important ones will come from the PSA site data.
+
+Images:
+- Images are scraped from the website and saved on the model as 'image_1' and 'image_2'. These are then put into the spreadsheet column 'Item Photo URL' in the
+  format image_1:image_2
+
+- Images are also injected into the 'description' html as img src tags.
+
+Titles:
+- Titles are generated based on the PSA card 'item information' and will be in the following format
+ - PSA [X] [Player/Pokemon Name] [SET/NUMBER] [SET NAME] [DESCRIPTION]
+    - X => PSA Grade
+    - Pokemon name comes from the 'Player' section on PSA
+    - Set Number will be determind by the 'Brand'. A model or database will need to be setup to store these translations. For example if
+      'Brand' is 'POKEMON JAPANESE SV3-RULER OF THE BLACK FLAME' then we need to know the right hand side of the set/number should be /108. The left
+      hand side of the Set/Number comes from the 'Card Number' on PSA.
+    - Set Name will also come from Brand. inside that same Brand translation table we will have a 'user friendly' string for each brand that appears often.
+
+        -- SIDE NOTE, IF A BRAND ISNT PRESENT IN THE DATABASE DURING PROCESSING, WE COULD HAVE AN OPTION TO NOT FULLY PROCESS THESE BUT PLACE THEM IN A 'UNSOLVED' ROW
+           OR SOMETHING SIMILAR AND ALERT THE USER THAT THE BRAND NEEDS TO BE SETUP AND THE FUNCTIONS RE-RAN.
+    - Description will be generated based on the grade of the card. If its a PSA 9 for example, the description will be MINT POKEMON CARD. If its 10, GEM MINT POKEMON CARD.
+      If the Brand is a Japanese set, then 'GEM MINT JAPANESE POKEMON CARD' for example. Suggested implementation is a 'ListingDescription' model with PSA Grade, Japanese Bool and Label.
+
+Quantity:
+- Quantity will usually be '1', however during the processing we will check if a card with the same title has already been generated for that batch. If it has, we increment
+  the EbayListing quantity.
+    - Consideration - storing PSA Certs will be more annoying this way. We'd have to have a 'PSA Cert' table or something where we link it to the EbayListing id?
+
+Price:
+- Use the generated title to search for competing listings and undercut them, rounded to the nearest 10p.
+ - Nice-to-haves:
+   Use the pokemon name, set number etc to see if we have a CR price stored - use that CR price to see if we'd lose money or not on the price.
+   *IMPORTANT* - Use the suggested price to figure out what our 'take home' amount would be. That way we can see at a glance if the price is dumb or not.

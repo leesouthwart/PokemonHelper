@@ -11,6 +11,8 @@
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
         "livewire/livewire": "*",
+        "predis/predis": "^2.2",
+        "pusher/pusher-php-server": "^7.2",
         "roach-php/laravel": "^2.0",
         "spatie/browsershot": "^3.57"
     },

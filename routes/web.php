@@ -3,12 +3,15 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Ebay\OAuthController as EbayOAuthController;
 use App\Http\Controllers\BidController;
+use App\Http\Controllers\BatchController;
 use App\Http\Controllers\CardController;
 
 use App\Models\EbayProfile;
 use App\Models\OauthToken;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+
+use Carbon\Carbon;
 
 use GuzzleHttp\Client;
 
@@ -64,6 +67,25 @@ Route::get('test2', function() {
     dd($json['result']['selectorElements']);
 });
 
+Route::get('test4', function() {
+    $batch = \App\Models\Batch::create([
+        'name' => Carbon::now() . '_' . uniqid()
+    ]);
+
+    $start = 87515517;
+    $end = 87515518;
+
+    for ($i = $start; $i <= $end; $i++) {
+        \App\Jobs\CreateEbayListing::dispatch($i, $batch);
+    }
+});
+
+Route::get('testtitle', function() {
+   $service = new \App\Services\PsaService;
+
+   dd($service->stripTitle('JOLTEON', 'MASTER BALL REVERSE HOLO'));
+});
+
 Route::get('test3', function() {
    $ebay = new \App\Services\EbayService();
    $items = $ebay->getEbayData('mew 183 172');
@@ -72,6 +94,8 @@ Route::get('test3', function() {
 Route::middleware('currency.convert')->group(function () {
     Route::get('cardrush', [CardController::class, 'index'])->name('cardrush');
     Route::post('store_card', [CardController::class, 'store'])->name('card.store');
+
+    Route::get('upload', [BatchController::class, 'create'])->name('batch.create');
 });
 
 
