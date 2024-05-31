@@ -11,6 +11,7 @@ class BatchListing extends Component
     public $title;
     public $quantity;
     public $price;
+    public $afterFees;
 
     public function mount(EbayListing $listing)
     {
@@ -18,6 +19,7 @@ class BatchListing extends Component
         $this->title = $this->listing->title;
         $this->quantity = $this->listing->quantity;
         $this->price = $this->listing->price;
+        $this->calcAfterFees();
     }
 
     public function render()
@@ -43,13 +45,17 @@ class BatchListing extends Component
     {
         $this->listing->price = $this->price;
         $this->listing->save();
+        $this->calcAfterFees();
     }
 
-    public function checkPrice()
+    public function calcAfterFees()
     {
-        $service = new \App\Services\EbayService();
-        $price = $service->getEbayDataForPsaListing($this->listing->search_phrase);
+        $price = $this->price - ($this->price * 0.165);
 
-        dd($price);
+        if($this->price < 30) {
+            $this->afterFees = number_format($price - 2.3, 2);
+        } else {
+            $this->afterFees = number_format($price - 3.3, 2);
+        }
     }
 }

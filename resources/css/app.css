@@ -7,3 +7,8 @@
     height: 150px;
     background-color: #6b7280;
 }
+
+.ebay_fee_text {
+    font-size: 11px;
+    padding-right: 5px;
+}
