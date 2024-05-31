@@ -7,11 +7,14 @@ use Illuminate\Support\Facades\Http;
 use App\Models\Card;
 use App\Models\Brand;
 
+use App\Services\EbayService;
+
 class PsaService
 {
     public function __construct()
     {
         $this->accessToken = (new AccessTokenService)->getAccessToken();
+        $this->ebayService = new EbayService();
     }
 
     public function getPsaCardData($cert)
@@ -123,16 +126,20 @@ class PsaService
         }
 
         $title = $this->formatTitle($mainData);
+        $searchPhrase = $this->formatTitle($mainData, true);
         $description = $this->formatBodyDescription($image1, $image2, $title);
         $quantity = 1;
+        $price = $this->getPrice($searchPhrase);
 
         return [
             'title' => $title,
+            'search_phrase' => $searchPhrase,
             'description' => $description,
             'quantity' => $quantity,
             'image1' => $image1,
             'image2' => $image2,
             'mainData' => $mainData,
+            'price' => $price
         ];
     }
 
@@ -184,7 +191,7 @@ class PsaService
         ];
     }
 
-    public function formatTitle($mainData)
+    public function formatTitle($mainData, $forSearch = false)
     {
         $title = [];
         $title['grade'] = config('psa.grade_labels')[$mainData['grade']];
@@ -202,6 +209,10 @@ class PsaService
         }
 
         $title['description'] = $this->setDescription($mainData);
+
+        if($forSearch) {
+            return 'PSA ' . $title['grade'] . ' ' . $title['pokemon'] . ' ' . $title['numbers'];
+        }
 
         return 'PSA ' . $title['grade'] . ' ' . $title['pokemon'] . ' ' . $title['numbers'] . ' ' . $title['set'] . ' ' . $title['description'];
     }
@@ -255,5 +266,10 @@ class PsaService
     public function formatBodyDescription($image1, $image2, $title)
     {
         return "<p><CENTER><H2 style='margin-top: 60px;'><font face='MS Sans Serif'>".$title."</font></H2><div style='text-align:center; display: flex; justify-content: center;'><img src='".$image1."' style='margin-right: 16px; display:inline-block;' width='285px' height='478.5px'><img src='".$image2."' style='display:inline-block;' width='285px' height='478.5px'></div><p style='margin-top: 60px;'><CENTER><h4><font face='MS Sans Serif'>Cards over £30 will be shipped using 48 hour tracked postage.</font></h4></CENTER></p><p><CENTER><h4><font face='MS Sans Serif'>Cert numbers may be different than the image for multiple quantity listings. Please message me to see an image of the exact card you will receive.</font></h4></CENTER></p>";
+    }
+
+    public function getPrice($searchPhrase)
+    {
+        return $this->ebayService->getEbayDataForPsaListing($searchPhrase)['lowest'];
     }
 }

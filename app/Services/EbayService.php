@@ -56,4 +56,35 @@ class EbayService
 
         return $items;
     }
+
+    public function getEbayDataForPsaListing($searchTerm)
+    {
+        $search = app()->environment('local') ? 'car' : $searchTerm;
+        $response = Http::withHeaders([
+            'X-EBAY-C-MARKETPLACE-ID' => 'EBAY_GB',
+            'X-EBAY-C-ENDUSERCTX' => 'contextualLocation=country%3DUK%2Czip%3DLE77JG',
+            'Authorization' => 'Bearer ' . $this->accessToken,
+        ])->get('https://api.ebay.com/buy/browse/v1/item_summary/search?q=' . $search .'&limit=3&sort=price&filter=itemLocationCountry:GB');
+
+        $data = $response->json();
+
+        $itemCardPrice = 0;
+
+        foreach ($data['itemSummaries'] as $item) {
+            $items[] = [
+                'price' => $item['price']['value'] + $item['shippingOptions'][0]['shippingCost']['value'] ?? 0,
+            ];
+
+            $itemCardPrice += $item['price']['value'];
+            $itemCardPrice += $item['shippingOptions'][0]['shippingCost']['value'] ?? 0;
+        }
+
+        $averageItemCardPrice = number_format($itemCardPrice / 3, 2);
+        $lowestItemCardPrice = min(array_column($items, 'price'));
+
+        return [
+            'lowest' => $lowestItemCardPrice,
+            'average' => $averageItemCardPrice,
+        ];
+    }
 }

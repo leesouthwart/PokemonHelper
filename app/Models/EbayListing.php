@@ -16,6 +16,7 @@ class EbayListing extends Model
         'image_2',
         'quantity',
         'batch_id',
+        'search_phrase',
     ];
 
     public function batch()

@@ -20,8 +20,8 @@ class BatchCreation extends Component
 
     public function mount()
     {
-        $this->batch = \App\Models\Batch::find(12);
-        $this->listings = $this->batch->ebayListings;
+        $this->batch = \App\Models\Batch::find(2);
+        $this->listings = $this->batch->ebayListings ?? null;
     }
 
     public function render()

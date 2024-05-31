@@ -80,6 +80,29 @@ Route::get('test4', function() {
     }
 });
 
+Route::get('test5', function() {
+    $input = 44.00;
+
+    // If the input ends in .x0 or .x5, subtract 0.01
+    $decimalPart = fmod($input, 1);
+    if (substr(number_format($decimalPart, 2, '.', ''), -1) == '0' || substr(number_format($decimalPart, 2, '.', ''), -1) == '5') {
+        $input -= 0.01;
+    }
+
+    // Round down to the nearest 5p
+    $rounded = floor($input * 20) / 20;
+
+    // Convert the rounded value to a string to check the last two digits
+    $roundedString = number_format($rounded, 2, '.', '');
+
+    // If the result ends in .00, subtract 0.01 to make it end in .99
+    if (substr($roundedString, -2) == '00') {
+        $rounded -= 0.01;
+    }
+
+    return number_format($rounded, 2, '.', '');
+});
+
 Route::get('testtitle', function() {
    $service = new \App\Services\PsaService;
 

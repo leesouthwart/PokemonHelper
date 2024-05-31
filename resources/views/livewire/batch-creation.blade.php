@@ -16,10 +16,9 @@
 
         @if($batch)
             <div>
-                <h2>Batch: {{$batch->id}}</h2>
                 @if($listings)
                     @foreach($listings as $listing)
-                        <p>{{$listing->title}}</p>
+                        <livewire:batch-listing :listing="$listing" wire:key="{{$listing->id}}" />
                     @endforeach
                 @endif
 
@@ -33,7 +32,6 @@
                     </div>
                 @endif
             </div>
-
         @endif
     </div>
 
@@ -41,7 +39,7 @@
     <div class="w-1/5 bg-gray-800">
         <div class="min-h-100">
             <div class="bg-gray-800 flex justify-center align-center py-3 border-b border-gray-700 text-gray-300">
-                <p>Batch Info</p>
+                <p>Batch {{$batch->id ?? ''}}</p>
             </div>
 
             @if($loading)
