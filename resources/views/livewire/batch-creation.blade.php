@@ -37,7 +37,7 @@
 
 
     <div class="w-1/5 bg-gray-800">
-        <div class="min-h-100">
+        <div class="h-full">
             <div class="bg-gray-800 flex justify-center align-center py-3 border-b border-gray-700 text-gray-300">
                 <p>Batch {{$batch->id ?? ''}}</p>
             </div>
@@ -52,8 +52,8 @@
                 </div>
             @endif
 
-            <div class="bg-gray-800 text-gray-300">
-
+            <div class="bg-gray-800 text-gray-300 flex flex-col items-center justify-center my-8">
+                <button wire:click="export" class="btn bg-blue-600 text-white px-32 py-4 mx-auto">Export</button>
             </div>
         </div>
 

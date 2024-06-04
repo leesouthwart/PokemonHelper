@@ -7,6 +7,9 @@ use Livewire\Component;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
+use App\Exports\EbayListingExport;
+use Maatwebsite\Excel\Facades\Excel;
+
 class BatchCreation extends Component
 {
 
@@ -49,5 +52,10 @@ class BatchCreation extends Component
         if(Queue::size() == 0) {
             $this->loading = false;
         }
+    }
+
+    public function export()
+    {
+        return Excel::download(new EbayListingExport($this->batch), 'listings.xlsx');
     }
 }
