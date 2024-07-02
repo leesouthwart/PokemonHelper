@@ -70,21 +70,29 @@ class EbayService
 
         $itemCardPrice = 0;
 
-        foreach ($data['itemSummaries'] as $item) {
-            $items[] = [
-                'price' => $item['price']['value'] + $item['shippingOptions'][0]['shippingCost']['value'] ?? 0,
-            ];
+        if(isset($data['itemSummaries'])) {
+            foreach ($data['itemSummaries'] as $item) {
+                $items[] = [
+                    'price' => $item['price']['value'] + $item['shippingOptions'][0]['shippingCost']['value'] ?? 0,
+                ];
 
-            $itemCardPrice += $item['price']['value'];
-            $itemCardPrice += $item['shippingOptions'][0]['shippingCost']['value'] ?? 0;
+                $itemCardPrice += $item['price']['value'];
+                $itemCardPrice += $item['shippingOptions'][0]['shippingCost']['value'] ?? 0;
+            }
+
+            $averageItemCardPrice = number_format($itemCardPrice / 3, 2);
+            $lowestItemCardPrice = min(array_column($items, 'price'));
+
+            return [
+                'lowest' => $lowestItemCardPrice,
+                'average' => $averageItemCardPrice,
+            ];
         }
 
-        $averageItemCardPrice = number_format($itemCardPrice / 3, 2);
-        $lowestItemCardPrice = min(array_column($items, 'price'));
-
         return [
-            'lowest' => $lowestItemCardPrice,
-            'average' => $averageItemCardPrice,
+            'lowest' => 0.00,
+            'average' => 0.00
         ];
+
     }
 }
