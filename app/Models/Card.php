@@ -17,6 +17,9 @@ class Card extends Model
         'search_term',
         'url',
         'psa_10_price',
+        'average_psa_10_price',
+        'roi_lowest',
+        'roi_average',
         'price',
         'image_url',
     ];

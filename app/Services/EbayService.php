@@ -20,12 +20,14 @@ class EbayService
    // Get data from eBay API. Called when Cards are first submitted and when they are focused on. Gets most up to date data and updates the card.
     public function getEbayData($searchTerm)
     {
-        $search = app()->environment('local') ? 'car' : $searchTerm;
+        // @todo figure out a better way to always have PSA 10 in the search term WITHOUT saving it in DB (as this would change front end forms)
+        $searchTermEbay = $searchTerm . ' PSA 10';
+
         $response = Http::withHeaders([
             'X-EBAY-C-MARKETPLACE-ID' => 'EBAY_GB',
             'X-EBAY-C-ENDUSERCTX' => 'contextualLocation=country%3DUK%2Czip%3DLE77JG',
             'Authorization' => 'Bearer ' . $this->accessToken,
-        ])->get('https://api.sandbox.ebay.com/buy/browse/v1/item_summary/search?q=' . $search .'&limit=3&sort=price');
+        ])->get('https://api.ebay.com/buy/browse/v1/item_summary/search?q=' . $searchTermEbay .'&limit=3&sort=price&filter=itemLocationCountry:GB');
 
         $data = $response->json();
 
@@ -41,9 +43,10 @@ class EbayService
             ];
 
             $itemCardPrice += $item['price']['value'];
+            $itemCardPrice += $item['shippingOptions'][0]['shippingCost']['value'] ?? 0;
         }
 
-        $averageItemCardPrice = number_format($itemCardPrice / 3, 2);
+        $averageItemCardPrice = number_format($itemCardPrice / count($data['itemSummaries']), 2);
         $lowestItemCardPrice = min(array_column($items, 'price'));
 
         $card = Card::where('search_term', $searchTerm)->first();
@@ -51,6 +54,10 @@ class EbayService
         if($card) {
             $card->psa_10_price = $lowestItemCardPrice;
             $card->average_psa_10_price = $averageItemCardPrice;
+
+            $card->roi_lowest = $this->calcRoi($card->converted_price, $lowestItemCardPrice);
+            $card->roi_average = $this->calcRoi($card->converted_price, $averageItemCardPrice);
+
             $card->save();
         }
 
@@ -93,6 +100,27 @@ class EbayService
             'lowest' => 0.00,
             'average' => 0.00
         ];
+    }
 
+    public function calcRoi($price, $price2)
+    {
+        // Calculate $afterFees
+        $afterFees = $price2 - (0.155 * $price2); // Subtract 15.5% of $price2
+
+        // Check if $price2 is greater than 30
+        if ($price2 > 30) {
+            $afterFees -= 3; // Subtract 3 if $price2 is greater than 30
+        } else {
+            $afterFees -= 1.75; // Subtract 2 if $price2 is 30 or less
+        }
+
+        // Calculate the adjusted initial price
+        $initialPrice = $price + 13;
+
+        // Calculate ROI
+        // ROI formula: ((Final Value - Initial Value) / Initial Value) * 100
+        $roi = (($afterFees - $initialPrice) / $initialPrice) * 100;
+
+        return $roi;
     }
 }

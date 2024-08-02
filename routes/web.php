@@ -109,6 +109,13 @@ Route::get('testtitle', function() {
    dd($service->stripTitle('JOLTEON', 'MASTER BALL REVERSE HOLO'));
 });
 
+Route::get('testnewapi', function() {
+    $service = new \App\Services\PsaService;
+    $data = $service->getPsaCardData('93874799');
+
+    dd($data);
+});
+
 Route::get('test3', function() {
    $ebay = new \App\Services\EbayService();
    $items = $ebay->getEbayData('mew 183 172');
