@@ -19,6 +19,7 @@ class CreateEbayListing implements ShouldQueue
     public $service;
     public $cert;
     public $batch;
+    public $ebayService;
 
     public $tries = 10;
     public $retryAfter = 180;

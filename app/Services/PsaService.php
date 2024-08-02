@@ -20,108 +20,29 @@ class PsaService
     public function getPsaCardData($cert)
     {
         $client = new \GuzzleHttp\Client();
+        $url = "https://api.psacard.com/publicapi/cert/GetByCertNumber/" . $cert;
 
-        $url = 'https://www.psacard.com/cert/' . $cert . '/psa';
 
-        $response = $client->request('GET', config('settings.psa_scrape_url_base') . $url, [
+        $response = $client->request('GET', $url, [
             'headers' => [
-                'accept' => 'application/json',
+                'Authorization' => 'bearer ' . config('settings.psa_api_access_token'),
+                'Content-Type' => 'application/json',
             ],
         ]);
 
+        $r = $response->getBody()->getContents();
 
-        $json = json_decode($response->getBody()->getContents(), true);
-        $jsonData = $json['result']['selectorElements'];
+        $result = json_decode($r)->PSACert;
 
-//        $jsonData = [
-//            [
-//                "selector" => "#certImgFront img",
-//                "textNodes" => [
-//                    ""
-//                ],
-//                "htmlElements" => [
-//                    '<img src="https://d1htnxwo4o0jhw.cloudfront.net/cert/152762159/small/kXgCxEvrLUWkNecjUmI_gg.jpg" class="img-responsive">'
-//                ]
-//            ],
-//            [
-//                "selector" => "#certImgBack img",
-//                "textNodes" => [
-//                    ""
-//                ],
-//                "htmlElements" => [
-//                    '<img src="https://d1htnxwo4o0jhw.cloudfront.net/cert/152762159/small/wAm6iShv2kisGBexVy-l6Q.jpg" class="img-responsive">'
-//                ]
-//            ],
-//            [
-//                "selector" => ".table-header-right",
-//                "textNodes" => [
-//                    // Add your text nodes here if needed
-//                ],
-//                "htmlElements" => [
-//                    '<table class="table table-fixed table-header-right text-medium">
-//                <tbody>
-//                    <tr>
-//                        <th class="no-border">Certification Number</th>
-//                        <td class="no-border">86344925</td>
-//                    </tr>
-//                    <tr>
-//                        <th>Label Type</th>
-//                        <td>
-//                            <img data-src="https://i.psacard.com/psacard/images/cert/table-image-ink.png" width="69" height="38" class="lazy margin-right-min" alt="" />
-//                            <span class="inline-block padding-top-min">with fugitive ink technology</span>
-//                        </td>
-//                    </tr>
-//                    <tr>
-//                        <th>Reverse Cert Number/Barcode</th>
-//                        <td>Yes</td>
-//                    </tr>
-//                    <tr>
-//                        <th>Year</th>
-//                        <td>2023</td>
-//                    </tr>
-//                    <tr>
-//                        <th>Brand</th>
-//                        <td>POKEMON JAPANESE SV3-RULER OF THE BLACK FLAME</td>
-//                    </tr>
-//                    <tr>
-//                        <th>Sport</th>
-//                        <td>TCG Cards</td>
-//                    </tr>
-//                    <tr>
-//                        <th>Card Number</th>
-//                        <td>066</td>
-//                    </tr>
-//                    <tr>
-//                        <th>Player</th>
-//                        <td>CHARIZARD ex</td>
-//                    </tr>
-//                    <tr>
-//                        <th>Variety/Pedigree</th>
-//                        <td></td>
-//                    </tr>
-//                    <tr>
-//                        <th>Grade</th>
-//                        <td>GEM MT 10</td>
-//                    </tr>
-//                </tbody>
-//            </table>'
-//                ]
-//            ]
-//        ];
+        $mainData = $this->formatMainData($result);
 
-        foreach($jsonData as $data) {
-            // Image 1 Logic
-            if($data['selector'] == '#certImgFront img') {
-                $image1 = $this->formatImage1($data['htmlElements'][0]);
-            }
+        $images = $this->getImages($cert);
 
-            // Image 2 Logic
-            if($data['selector'] == '#certImgBack img') {
-                $image2 = $this->formatImage2($data['htmlElements'][0]);
-            }
-
-            if($data['selector'] == '.table-header-right') {
-                $mainData = $this->formatMainData($data['htmlElements'][0]);
+        foreach($images as $image) {
+            if($image->IsFrontImage == True) {
+                $image1 = $image->ImageURL;
+            } else {
+                $image2 = $image->ImageURL;
             }
         }
 
@@ -167,27 +88,12 @@ class PsaService
 
     public function formatMainData($data)
     {
-        $dom = new \DOMDocument();
-        libxml_use_internal_errors(true);
-        $dom->loadHTML($data);
-        libxml_clear_errors();
-
-        // Create a new DOMXPath instance
-        $xpath = new \DOMXPath($dom);
-
-        // Extract the values using XPath queries
-        $brand = $xpath->query("//th[text()='Brand']/following-sibling::td")->item(0)->textContent ?? '';
-        $cardNumber = $xpath->query("//th[text()='Card Number']/following-sibling::td")->item(0)->textContent ?? '';
-        $pokemon = $xpath->query("//th[text()='Player']/following-sibling::td")->item(0)->textContent ?? '';
-        $grade = $xpath->query("//th[text()='Grade']/following-sibling::td")->item(0)->textContent ?? '';
-        $pedigree = $xpath->query("//th[text()='Variety/Pedigree']/following-sibling::td")->item(0)->textContent ?? '';
-
         return [
-            'brand' => $brand,
-            'cardNumber' => $cardNumber,
-            'pokemon' => $pokemon,
-            'grade' => $grade,
-            'pedigree' => $pedigree
+            'brand' => $data->Brand,
+            'cardNumber' => $data->CardNumber,
+            'pokemon' => $data->Subject,
+            'grade' => $data->CardGrade,
+            'pedigree' => $data->Variety,
         ];
     }
 
@@ -223,6 +129,11 @@ class PsaService
         if (strpos($pokemonName, '/') !== false) {
             $parts = explode('/', $pokemonName);
             $pokemonName = $parts[1];
+        }
+
+        if (strpos($pokemonName, '-') !== false) {
+            $parts = explode('-', $pokemonName);
+            $pokemonName = $parts[0];
         }
 
         $lowercaseString = strtolower($pokemonName);
@@ -271,5 +182,32 @@ class PsaService
     public function getPrice($searchPhrase)
     {
         return $this->ebayService->getEbayDataForPsaListing($searchPhrase)['lowest'];
+    }
+
+    public function getImages($cert)
+    {
+        $url = "https://api.psacard.com/publicapi/cert/GetImagesByCertNumber/" . $cert;
+        $client = new \GuzzleHttp\Client();
+        try {
+            $response = $client->request('GET', $url, [
+                'headers' => [
+                    'Authorization' => 'bearer ' . config('settings.psa_api_access_token'),
+                    'Content-Type' => 'application/json',
+                ],
+            ]);
+
+            $r = $response->getBody()->getContents();
+
+            $result = json_decode($r);
+
+            return $result;
+
+        } catch (RequestException $e) {
+            if ($e->hasResponse()) {
+                echo $e->getResponse()->getBody()->getContents();
+            } else {
+                echo $e->getMessage();
+            }
+        }
     }
 }
