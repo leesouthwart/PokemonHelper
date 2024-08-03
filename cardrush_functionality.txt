@@ -1,0 +1,40 @@
+
+Setup Job to fetch CR data & ebay data. Should do basically the same thing as what the Form submission is doing
+Setup Command to consistently update card data. Figure out how we want to schedule these.
+Create an import script to import from csv
+
+Add a 'view image' button to card row
+Add 'filtering' to the card list
+Add 'sorting' to the card list
+Add 'searching' to the card list
+
+pagination on card list
+
+HOST LIVE - so we can have schedulers running
+
+--
+
+Add a 'card_region' concept so that we can have the same card in multiple regions
+Add a 'Region selector' which will change the current currency and we'll use this to determine region
+When doing the ebay API request, change data based on region and then store based on region
+
+Make 'ebay fee' and shipping fees configurable per user
+
+All this because we dont have to have GBP listings in the AUS users and vice versa
+
+If a user adds a card via form, it should run for both regions.
+
+--
+
+Create a 'favourites' list and the ability to add cards to it. Per User (so check auth)
+
+Add Auth to Batch and use that to log if a card has been listed recently. Can do lots of functionality with this Batch to Card link
+
+--
+
+Create a 'popularity' algorithm to sort cards by popularity
+
+
+--
+
+Create a 'Generate List' functionality to generate a list of cards based on a set of filters & popularity

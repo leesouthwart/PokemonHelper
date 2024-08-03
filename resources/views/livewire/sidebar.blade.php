@@ -16,38 +16,62 @@
     <div class="bg-gray-800 text-gray-300">
         @if($card)
             @foreach($ebayData[$card->id] as $listingData)
-                <div class="p-4">
-                    <div class="w-100 flex align-center">
-                        <div class="listing-image-container">
-                            <img class="rounded" height="auto" width="100%" src="{{ $listingData['image'] }}" alt="{{ $listingData['title'] }}">
+{{--                <div class="p-4">--}}
+{{--                    <div class="w-100 flex align-center">--}}
+{{--                        <div class="listing-image-container">--}}
+{{--                            <img class="rounded" height="auto" width="100%" src="{{ $listingData['image'] }}" alt="{{ $listingData['title'] }}">--}}
+{{--                        </div>--}}
+
+{{--                    </div>--}}
+
+{{--                    <div class="flex mb-0 mt-2 text-sm">--}}
+{{--                        <p class="mb-0 font-small"><i class="fas fa-star text-gray-300"></i></p>--}}
+{{--                        <p class="flex mb-0">{{$listingData['seller']['feedbackScore']}} ({{$listingData['seller']['feedbackPercentage']}}%)</p>--}}
+{{--                    </div>--}}
+
+{{--                    <div>--}}
+{{--                        <p>{{$listingData['seller']['username']}}</p>--}}
+{{--                    </div>--}}
+
+{{--                    <div class="my-3">--}}
+{{--                        <p class="mb-2">{{$listingData['title']}}</p>--}}
+{{--                        <p class="mb-2">--}}
+{{--                            @if($currency->id != \App\Models\Currency::GBP)--}}
+{{--                                {{$currency->symbol}}{{$listingData['price'] * $currency->convertTo->where('id', $currency->id)->first()->pivot->conversion_rate}}--}}
+{{--                            @else--}}
+{{--                                {{$currency->symbol}}{{$listingData['price']}}--}}
+{{--                            @endif--}}
+{{--                        </p>--}}
+{{--                    </div>--}}
+
+{{--                    <div>--}}
+{{--                        <a class="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded" target="_blank" href="{{$listingData['url']}}">View on Ebay</a>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+                <li class="flex flex-col gap-4 pt-12 sm:flex-row">
+                    <img class="aspect-[3/5] w-44 flex-none rounded object-cover" src="{{ $listingData['image'] }}" alt="">
+                    <div class="max-w-xl flex-auto">
+                        <div class="flex mb-0 mt-2 text-sm">
+                            <p class="mb-0 font-small"><i class="fas fa-star text-gray-300"></i></p>
+                            <p class="flex mb-0">{{$listingData['seller']['feedbackScore']}} ({{$listingData['seller']['feedbackPercentage']}}%)</p>
                         </div>
-
-                    </div>
-
-                    <div class="flex mb-0 mt-2 text-sm">
-                        <p class="mb-0 font-small"><i class="fas fa-star text-gray-300"></i></p>
-                        <p class="flex mb-0">{{$listingData['seller']['feedbackScore']}} ({{$listingData['seller']['feedbackPercentage']}}%)</p>
-                    </div>
-
-                    <div>
                         <p>{{$listingData['seller']['username']}}</p>
-                    </div>
+                        <p class="mt-6 text-base leading-7 text-gray-300">{{$listingData['title']}}</p>
+                        <ul role="list" class="mt-6 flex flex-col gap-x-6">
+                            <li>
+                                @if($currency->id != \App\Models\Currency::GBP)
+                                    {{$currency->symbol}}{{$listingData['price'] * $currency->convertTo->where('id', $currency->id)->first()->pivot->conversion_rate}}
+                                @else
+                                    {{$currency->symbol}}{{$listingData['price']}}
+                                @endif
+                            </li>
 
-                    <div class="my-3">
-                        <p class="mb-2">{{$listingData['title']}}</p>
-                        <p class="mb-2">
-                            @if($currency->id != \App\Models\Currency::GBP)
-                                {{$currency->symbol}}{{$listingData['price'] * $currency->convertTo->where('id', $currency->id)->first()->pivot->conversion_rate}}
-                            @else
-                                {{$currency->symbol}}{{$listingData['price']}}
-                            @endif
-                        </p>
+                            <li class="mt-2">
+                                <a class="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded mt-2" target="_blank" href="{{$listingData['url']}}">View on Ebay</a>
+                            </li>
+                        </ul>
                     </div>
-
-                    <div>
-                        <a class="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded" target="_blank" href="{{$listingData['url']}}">View on Ebay</a>
-                    </div>
-                </div>
+                </li>
             @endforeach
         @endif
     </div>

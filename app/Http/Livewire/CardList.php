@@ -13,11 +13,12 @@ class CardList extends Component
 
     public function mount()
     {
-        $this->cardList = Card::all();
+        $this->cardList = Card::orderBy('created_at', 'desc')->get();
     }
 
     public function render()
     {
         return view('livewire.card-list');
     }
+
 }
