@@ -75,9 +75,17 @@ class Card extends Model
         return $data;
     }
 
-    public function getConvertedPriceAttribute()
+    public function getConvertedPriceAttribute($currency = null)
     {
-        $currency = Currency::where('code', session('currency'))->first();
+        // Running in command line - need to ensure currency is set
+        if(!$currency) {
+            $currency = Currency::where('code', session('currency'))->first();
+        }
+
+        if(!$currency){
+            $currency = Currency::find(Currency::GBP);
+        }
+
         $intVal = intval(str_replace(',', '', $this->cr_price));
         $price = $intVal * $currency->convertFrom->where('id', Currency::JPY)->first()->pivot->conversion_rate;
 

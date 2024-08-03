@@ -1,12 +1,18 @@
 
-Setup Job to fetch CR data & ebay data. Should do basically the same thing as what the Form submission is doing
-Setup Command to consistently update card data. Figure out how we want to schedule these.
-Create an import script to import from csv
 
-Add a 'view image' button to card row
+Setup Command to consistently update card data. Figure out how we want to schedule these.
+    - CR Data
+    - eBay Data
+
 Add 'filtering' to the card list
 Add 'sorting' to the card list
 Add 'searching' to the card list
+
+error when focusing card with no psa listings
+
+Change sidebar to display price + shipping price
+
+https://i.imgur.com/ak87EYt.png add images to card list
 
 pagination on card list
 
@@ -38,3 +44,7 @@ Create a 'popularity' algorithm to sort cards by popularity
 --
 
 Create a 'Generate List' functionality to generate a list of cards based on a set of filters & popularity
+
+--
+
+Use sold data to determine approximate popularity

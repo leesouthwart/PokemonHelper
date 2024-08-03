@@ -59,6 +59,8 @@ class EbayService
             $card->roi_average = $this->calcRoi($card->converted_price, $averageItemCardPrice);
 
             $card->save();
+        } else {
+            Log::error('Card not found for ' . $searchTerm);
         }
 
         return $items;
@@ -122,5 +124,18 @@ class EbayService
         $roi = (($afterFees - $initialPrice) / $initialPrice) * 100;
 
         return $roi;
+    }
+
+    //@todo - This isnt working because we don't have permission to use the marketplace_insights api
+    // https://developer.ebay.com/api-docs/buy/marketplace-insights/overview.html
+    public function getSalesData($searchTerm)
+    {
+        $response = Http::withHeaders([
+            'X-EBAY-C-MARKETPLACE-ID' => 'EBAY_GB',
+            'X-EBAY-C-ENDUSERCTX' => 'contextualLocation=country%3DUK%2Czip%3DLE77JG',
+            'Authorization' => 'Bearer ' . $this->accessToken,
+        ])->get('https://api.ebay.com/buy/marketplace_insights/v1_beta/item_sales/search?q=iphone&category_ids=9355&limit=3');
+
+        return $response->json();
     }
 }

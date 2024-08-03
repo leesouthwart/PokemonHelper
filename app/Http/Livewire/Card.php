@@ -58,7 +58,7 @@ class Card extends Component
         } elseif ($average > 50 && $average < 75) {
             $this->roiAverageColor =  $colours['green'];
         } elseif ($average > 30 && $average < 50) {
-            $this->roiAverageColor =  $colours['yellow'];
+            $this->roiAverageColor =  $colours['orange'];
         } elseif ($average < 30) {
             $this->roiAverageColor =  $colours['red'];
         }
