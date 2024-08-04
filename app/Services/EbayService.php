@@ -36,7 +36,7 @@ class EbayService
         foreach ($data['itemSummaries'] as $item) {
             $items[] = [
                 'title' => $item['title'],
-                'price' => $item['price']['value'],
+                'price' => number_format($item['price']['value'] + $item['shippingOptions'][0]['shippingCost']['value'] ?? 0, 2),
                 'image' => $item['image']['imageUrl'],
                 'url' => $item['itemWebUrl'],
                 'seller' => $item['seller'],

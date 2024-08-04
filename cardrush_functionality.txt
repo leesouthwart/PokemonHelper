@@ -10,13 +10,10 @@ Add 'searching' to the card list
 
 error when focusing card with no psa listings
 
-Change sidebar to display price + shipping price
 
 https://i.imgur.com/ak87EYt.png add images to card list
 
 pagination on card list
-
-HOST LIVE - so we can have schedulers running
 
 --
 
