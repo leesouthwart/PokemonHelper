@@ -20,5 +20,4 @@ class CardList extends Component
     {
         return view('livewire.card-list');
     }
-
 }
