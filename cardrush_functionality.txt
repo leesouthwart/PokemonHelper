@@ -10,7 +10,6 @@ Add 'searching' to the card list
 
 error when focusing card with no psa listings
 
-
 https://i.imgur.com/ak87EYt.png add images to card list
 
 pagination on card list

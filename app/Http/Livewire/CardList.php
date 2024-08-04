@@ -5,19 +5,20 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 
 use App\Models\Card;
+use Livewire\WithPagination;
 
 class CardList extends Component
 {
 
-    public $cardList = [];
+    use withPagination;
 
-    public function mount()
-    {
-        $this->cardList = Card::orderBy('created_at', 'desc')->get();
-    }
 
     public function render()
     {
-        return view('livewire.card-list');
+        return view('livewire.card-list',
+            [
+                'cardList' => Card::orderBy('created_at', 'desc')->paginate(20),
+            ]
+        );
     }
 }
