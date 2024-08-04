@@ -1,7 +1,13 @@
 
 <tr class="cursor-pointer" wire:click="selectCard">
+    <td class="py-4 pl-4">
+        <div class="flex items-center">
+            <img src="{{$card->image_url}}" class="aspect-[4/5] h-20">
+        </div>
+    </td>
+
     <td class="py-4 pl-4 pr-8 sm:pl-6 lg:pl-8">
-        <div class="flex items-center gap-x-4">
+        <div class="flex items-center">
             <div class="truncate text-sm font-medium leading-6 text-white">{{$card->search_term}}</div>
         </div>
     </td>
